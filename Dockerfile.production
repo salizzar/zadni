@@ -4,7 +4,10 @@ MAINTAINER	Marcelo Pinheiro <salizzar@gmail.com>
 ENV		HOME		/opt/zadni
 WORKDIR		/opt/zadni
 
-COPY		src/zadni	/opt/
+RUN		groupadd --system zadni	&&	\
+		useradd  --system --gid zadni --home-dir /opt --shell /sbin/nologin zadni
+
+COPY		src/zadni	/opt/zadni
 
 RUN		deps='								\
 		make								\
@@ -15,7 +18,11 @@ RUN		deps='								\
 		libssl-dev							\
 		'							&&	\
 		apt-get update						&&	\
-		apt-get install -y --no-install-recommends $deps	&&	\
+		apt-get install -y --no-install-recommends libpq5 $deps	&&	\
 		ruby -S bundle install --deployment			&&	\
 		apt-get purge -y --auto-remove $deps
+
+RUN		chown -R zadni. /opt/zadni
+
+USER		zadni
 
