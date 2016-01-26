@@ -1,0 +1,21 @@
+FROM		ruby:2.3.0-slim
+MAINTAINER	Marcelo Pinheiro <salizzar@gmail.com>
+
+ENV		HOME		/opt/zadni
+WORKDIR		/opt/zadni
+
+COPY		src/zadni	/opt/
+
+RUN		deps='								\
+		make								\
+		gcc								\
+		patch								\
+		libpq-dev							\
+		libcrypto++-dev							\
+		libssl-dev							\
+		'							&&	\
+		apt-get update						&&	\
+		apt-get install -y --no-install-recommends $deps	&&	\
+		ruby -S bundle install --deployment			&&	\
+		apt-get purge -y --auto-remove $deps
+
